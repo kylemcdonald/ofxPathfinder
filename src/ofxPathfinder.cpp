@@ -1,17 +1,5 @@
 #include "ofxPathfinder.h"
 
-// this implementation is optimized for a single map with multiple pathfinding
-// lookups, with some consideration for the case where a map is regularly
-// changing. this could be optimized for a very large, sparse map or one that
-// is changing constantly, by moving the setPosition()/setCost() to right after
-// the first getTile() inside consider().
-
-// based on:
-// http://www.policyalmanac.org/games/aStarTutorial.htm
-// http://stackoverflow.com/questions/1517854/priority-queue-comparison-for-pointers
-// http://www.cplusplus.com/reference/stl/priority_queue/
-// http://www.cplusplus.com/reference/stl/set/
-
 class Tile {
 public:
 	Tile() : total(0), known(0), estimate(0), cost(1) {
