@@ -8,8 +8,9 @@ typedef ofPtr<Tile> TilePtr;
 
 class ofxPathfinder {
 public:	
-	void setup(ofImage& img);
-	void find(int sourceX, int sourceY, int targetX, int targetY);
+	ofxPathfinder();
+	void setup(ofPixels& pix);
+	float find(int sourceX, int sourceY, int targetX, int targetY);
 	ofPolyline path;
 	
 private:
@@ -21,7 +22,6 @@ private:
 	
 	void setSource(int x, int y);
 	void setTarget(int x, int y);
-	void setupTiles(int w, int h);
 	TilePtr& getTile(int x, int y);
 	bool safe(int x, int y) const;
 	void finish();

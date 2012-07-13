@@ -64,13 +64,20 @@ inline bool operator<(const TilePtr& a, const TilePtr& b) {
 	return (*a) < (*b);
 }
 
-void ofxPathfinder::setup(ofImage& img) {
-	setupTiles(img.getWidth(), img.getHeight());
+ofxPathfinder::ofxPathfinder()
+	:w(0)
+	,h(0)
+	,found(false) {
+}
+
+void ofxPathfinder::setup(ofPixels& pix) {
+	w = pix.getWidth(), h = pix.getHeight();		
+	tiles.clear();
 	for(int y = 0; y < h; y++) {
 		for(int x = 0; x < w; x++) {
 			tiles.push_back(TilePtr(new Tile()));
 			getTile(x, y)->setPosition(x, y);
-			float brightness = img.getColor(x, y).getBrightness() / 255.;
+			float brightness = pix.getColor(x, y).getBrightness() / 255.;
 			if(brightness == 0.) { // black tiles are not walkable
 				getTile(x, y)->setCost(0);
 			} else if(brightness < 1.) { // slow tiles (darker) have higher cost
@@ -79,7 +86,7 @@ void ofxPathfinder::setup(ofImage& img) {
 		}
 	}
 }
-void ofxPathfinder::find(int sourceX, int sourceY, int targetX, int targetY) {
+float ofxPathfinder::find(int sourceX, int sourceY, int targetX, int targetY) {
 	found = false;
 	openSet.clear();
 	closedSet.clear();
@@ -103,6 +110,7 @@ void ofxPathfinder::find(int sourceX, int sourceY, int targetX, int targetY) {
 		consider(cur, +0, +1);
 		consider(cur, +1, +1);
 	}
+	return target->getTotal();
 }
 void ofxPathfinder::setSource(int x, int y) {
 	source = getTile(ofClamp(x, 0, w - 1), ofClamp(y, 0, h - 1));
@@ -110,17 +118,6 @@ void ofxPathfinder::setSource(int x, int y) {
 }
 void ofxPathfinder::setTarget(int x, int y) {
 	target = getTile(ofClamp(x, 0, w - 1), ofClamp(y, 0, h - 1));
-}
-void ofxPathfinder::setupTiles(int w, int h) {
-	if(w != this->w || h != this->h) {
-		this->w = w, this->h = h;		
-		tiles.clear();
-		for(int y = 0; y < h; y++) {
-			for(int x = 0; x < w; x++) {
-				tiles.push_back(TilePtr(new Tile()));
-			}
-		}
-	}
 }
 
 TilePtr& ofxPathfinder::getTile(int x, int y) {
@@ -137,6 +134,7 @@ void ofxPathfinder::finish() {
 		path.addVertex(cur->getPosition());
 		cur = cur->parent;
 	}
+	path.addVertex(source->getPosition());
 }
 void ofxPathfinder::consider(const TilePtr& parent, int x, int y) {
 	parent->getNeighbor(x, y);
